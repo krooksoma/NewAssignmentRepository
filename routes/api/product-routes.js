@@ -4,17 +4,39 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
-  // be sure to include its associated Category and Tag data
+  try{
+    const connection = await Product.findAll({
+      // includes Category and Tag models
+      include: [Category, Tag]
+    })
+    // with positive connection it displays the retrieved data
+    res.status(200).json(connection);
+  }catch(error){
+    // displays error code 500 (internal server error)
+    res.status(500).json(error);
+  }
+  
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
-});
+  try{
+    const connection = await Product.findByPk((req.params.id),{
+      includes: [Category, Tag]
+    })
+    // with positive connection it displays the retrieved data
+    res.status(200).json(connection);
 
+  }catch(error){
+    // error code 500(internal server error)
+    res.status(500).json(error);
+  }
+ 
+});
+// HELP UNDERSTANDING THIS ONE 
 // create new product
 router.post('/', (req, res) => {
   /* req.body should look like this...
@@ -89,8 +111,19 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
+// DELETE - route to delete a product by its id 
+router.delete('/:id', async (req, res) => {
+  try{
+    const connection = await Product.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    res.status(200).json(connection);
+  }catch(error){
+    res.status(500).json(error);
+  }
+  
 });
 
 module.exports = router;

@@ -9,7 +9,6 @@ router.get('/', async (req, res) => {
       include: [Product]
     })
     // with positive connection it reads the data given
-
     res.status(200).json(connection)
   }
   catch(error){
@@ -44,21 +43,32 @@ router.post('/', async (req, res) => {
   }
 });
 
+
 router.put('/:id', async (req, res) => {
-  try{
-    const connection = await Category.update((req.params.body), {
+  try{    
+    const connection = await Category.update((req.body), {
       where: {
         id: req.params.id
       }
     })
     res.status(200).json(connection)
   }catch(error){
-    res.status(404).json(error)
+    res.status(500).json(error)
   }
   // update a category by its `id` value
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
+  try{
+    const connection = await Category.destroy({
+      where:{
+        id: req.params.id
+      }
+    })
+    res.status(200).json(connection)
+  }catch(error){
+    res.status(500).json(error);
+  }
   // delete a category by its `id` value
 });
 
